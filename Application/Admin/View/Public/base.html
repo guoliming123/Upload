@@ -1,0 +1,550 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{$meta_title}|OneThink管理平台</title>
+    <link href="__ROOT__/Public/favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <link rel="stylesheet" type="text/css" href="__CSS__/base.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__CSS__/common.css" media="all">
+    <link rel="stylesheet" type="text/css" href="__CSS__/module.css">
+    <link rel="stylesheet" type="text/css" href="__CSS__/style.css" media="all">
+	<link rel="stylesheet" type="text/css" href="__CSS__/{$Think.config.COLOR_STYLE}.css" media="all">
+    <!--<link rel="stylesheet" type="text/css" href="__ROOT__/Public/Admin/timepicker/css/main.css" />-->
+    <link rel="stylesheet" type="text/css" href="__ROOT__/Public/Admin/timepicker/css/jquery-ui.css" />
+
+     <!--[if lt IE 9]>
+    <script type="text/javascript" src="__STATIC__/jquery-1.10.2.min.js"></script>
+    <![endif]--><!--[if gte IE 9]><!-->
+    <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="__JS__/jquery.mousewheel.js"></script>
+    <!--<![endif]-->
+    <block name="style"></block>
+</head>
+<body>
+
+    <!-- 头部 -->
+    <div class="header">
+        <!-- Logo -->
+        <span class="logo"><img src="Public/Admin/images/bg_icon.png" width="104" style="margin-top: 2px;"/> </span>
+        <!-- /Logo -->
+
+        <!-- 主导航 -->
+        <ul class="main-nav">
+            <volist name="__MENU__.main" id="menu">
+                <li class="{$menu.class|default=''}"><a href="{$menu.url|U}">{$menu.title}</a></li>
+            </volist>
+        </ul>
+        <!-- /主导航 -->
+
+        <!-- 用户栏 -->
+        <div class="user-bar">
+            <a href="javascript:;" class="user-entrance"><i class="icon-user"></i></a>
+            <ul class="nav-list user-menu hidden">
+                <li class="manager">你好，<em title="{:session('user_auth.username')}">{:session('user_auth.username')}</em></li>
+                <li><a href="{:U('User/updatePassword')}">修改密码</a></li>
+                <li><a href="{:U('User/updateNickname')}">修改昵称</a></li>
+                <li><a href="{:U('Public/logout')}">退出</a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- /头部 -->
+
+    <!-- 边栏 -->
+    <div class="sidebar">
+        <!-- 子导航 -->
+        <block name="sidebar">
+            <div id="subnav" class="subnav">
+                <notempty name="_extra_menu">
+                    {// 动态扩展菜单 //}
+                    {:extra_menu($_extra_menu,$__MENU__)}
+                </notempty>
+                <volist name="__MENU__.child" id="sub_menu">
+                    <!-- 子导航 -->
+                    <notempty name="sub_menu">
+                        <notempty name="key"><h3><i class="icon icon-unfold"></i>{$key}</h3></notempty>
+                        <ul class="side-sub-menu">
+                            <volist name="sub_menu" id="menu">
+                                <li>
+                                    <a class="item" href="{$menu.url|U}">{$menu.title}</a>
+                                </li>
+                            </volist>
+                        </ul>
+                    </notempty>
+                    <!-- /子导航 -->
+                </volist>
+            </div>
+        </block>
+        <!-- /子导航 -->
+    </div>
+    <!-- /边栏 -->
+
+    <!-- 内容区 -->
+    <div id="main-content">
+        <div id="top-alert" class="fixed alert alert-error" style="display: none;">
+            <button class="close fixed" style="margin-top: 4px;">&times;</button>
+            <div class="alert-content">这是内容</div>
+        </div>
+        <div id="main" class="main">
+            <block name="nav">
+            <!-- nav -->
+            <notempty name="_show_nav">
+            <div class="breadcrumb">
+                <span>您的位置:</span>
+                <assign name="i" value="1" />
+                <foreach name="_nav" item="v" key="k">
+                    <if condition="$i eq count($_nav)">
+                    <span>{$v}</span>
+                    <else />
+                    <span><a href="{$k}">{$v}</a>&gt;</span>
+                    </if>
+                    <assign name="i" value="$i+1" />
+                </foreach>
+            </div>
+            </notempty>
+            <!-- nav -->
+            </block>
+
+            <block name="body"> </block>
+        </div>
+        <div class="cont-ft">
+            <div class="copyright">
+                <div class="fl">感谢使用<a href="http://www.onethink.cn" target="_blank">OneThink</a>管理平台</div>
+                <div class="fr">V{$Think.const.ONETHINK_VERSION}</div>
+            </div>
+        </div>
+    </div>
+    <!-- /内容区 -->
+    <script type="text/javascript">
+    (function(){
+        var ThinkPHP = window.Think = {
+            "ROOT"   : "__ROOT__", //当前网站地址
+            "APP"    : "__APP__", //当前项目地址
+            "PUBLIC" : "__PUBLIC__", //项目公共目录地址
+            "DEEP"   : "{:C('URL_PATHINFO_DEPR')}", //PATHINFO分割符
+            "MODEL"  : ["{:C('URL_MODEL')}", "{:C('URL_CASE_INSENSITIVE')}", "{:C('URL_HTML_SUFFIX')}"],
+            "VAR"    : ["{:C('VAR_MODULE')}", "{:C('VAR_CONTROLLER')}", "{:C('VAR_ACTION')}"]
+        }
+    })();
+    </script>
+    <script type="text/javascript" src="__STATIC__/think.js"></script>
+    <script type="text/javascript" src="__JS__/common.js"></script>
+    <script type="text/javascript">
+        +function(){
+            var $window = $(window), $subnav = $("#subnav"), url;
+            $window.resize(function(){
+                $("#main").css("min-height", $window.height() - 130);
+            }).resize();
+
+            /* 左边菜单高亮 */
+            url = window.location.pathname + window.location.search;
+            url = url.replace(/(\/(p)\/\d+)|(&p=\d+)|(\/(id)\/\d+)|(&id=\d+)|(\/(group)\/\d+)|(&group=\d+)/, "");
+            $subnav.find("a[href='" + url + "']").parent().addClass("current");
+
+            /* 左边菜单显示收起 */
+            $("#subnav").on("click", "h3", function(){
+                var $this = $(this);
+                $this.find(".icon").toggleClass("icon-fold");
+                $this.next().slideToggle("fast").siblings(".side-sub-menu:visible").
+                      prev("h3").find("i").addClass("icon-fold").end().end().hide();
+            });
+
+            $("#subnav h3 a").click(function(e){e.stopPropagation()});
+
+            /* 头部管理员菜单 */
+            $(".user-bar").mouseenter(function(){
+                var userMenu = $(this).children(".user-menu ");
+                userMenu.removeClass("hidden");
+                clearTimeout(userMenu.data("timeout"));
+            }).mouseleave(function(){
+                var userMenu = $(this).children(".user-menu");
+                userMenu.data("timeout") && clearTimeout(userMenu.data("timeout"));
+                userMenu.data("timeout", setTimeout(function(){userMenu.addClass("hidden")}, 100));
+            });
+
+	        /* 表单获取焦点变色 */
+	        $("form").on("focus", "input", function(){
+		        $(this).addClass('focus');
+	        }).on("blur","input",function(){
+				        $(this).removeClass('focus');
+			        });
+		    $("form").on("focus", "textarea", function(){
+			    $(this).closest('label').addClass('focus');
+		    }).on("blur","textarea",function(){
+			    $(this).closest('label').removeClass('focus');
+		    });
+
+            // 导航栏超出窗口高度后的模拟滚动条
+            var sHeight = $(".sidebar").height();
+            var subHeight  = $(".subnav").height();
+            var diff = subHeight - sHeight; //250
+            var sub = $(".subnav");
+            if(diff > 0){
+                $(window).mousewheel(function(event, delta){
+                    if(delta>0){
+                        if(parseInt(sub.css('marginTop'))>-10){
+                            sub.css('marginTop','0px');
+                        }else{
+                            sub.css('marginTop','+='+10);
+                        }
+                    }else{
+                        if(parseInt(sub.css('marginTop'))<'-'+(diff-10)){
+                            sub.css('marginTop','-'+(diff-10));
+                        }else{
+                            sub.css('marginTop','-='+10);
+                        }
+                    }
+                });
+            }
+        }();
+    </script>
+    <script type="text/javascript" src="/Public/Admin/timepicker/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/Public/Admin/timepicker/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="/Public/Admin/timepicker/js/jquery-ui-slide.min.js"></script>
+    <script type="text/javascript" src="/Public/Admin/timepicker/js/jquery-ui-timepicker-addon.js"></script>
+    <script>
+        $('#timechose').datetimepicker();
+    </script>
+        <script>
+            //添加排期
+            $("#schedadd").click(function(){
+                var venueadd  = $("#venueadd").val();    //选择场馆
+                var itemsadd  = $("#itemsadd").val();    //服务项目选择
+                var timechose  = $("#timechose").val();  //开始时间
+                var timelength = $("#timelength").val(); //时长
+                var price = $("#price").val(); //原价
+                var memberprice = $("#memberprice").val(); //会员价
+                var peplenum = $("#peplenum").val(); //人数
+                var ischose=$("#addschedule").attr("checked") || 0; //是否选中
+
+                var reg = /^\+?[1-9]\d*$/;    //大于0的数
+                if(!reg.test(price)){
+                    $("#prices").html('<span style="color:red;">&nbsp;输入大于0的数</span>');
+                    $("#price").val('');
+                    return false;
+                }
+                if(!reg.test(memberprice)){
+                    $("#memberprices").html('<span style="color:red;">&nbsp;输入大于0的数</span>');
+                    $("#price").val('');
+                    return false;
+                }
+                if(!reg.test(peplenum)){
+                    $("#peplenums").html('<span style="color:red;">&nbsp;输入大于0的数</span>');
+                    $("#price").val('');
+                    return false;
+                }
+                if(venueadd<1 || itemsadd<1 || timechose.length<1 || timelength<1 || price.length<1 || memberprice.length<1 || peplenum.length<1) {
+                    alert('所有参数必填！');
+                }else{
+                    //添加排期
+                    $.ajax({
+                        url : '{:U("venue/addschedule")}',
+                        type : 'POST',
+                        data : {'venueadd' : venueadd,'itemsadd':itemsadd,'timechose':timechose,'timelength':timelength,'price':price,'memberprice':memberprice,'peplenum':peplenum},
+                        success : function(data) {
+                            if(data.status=1){
+                                alert('添加成功！');
+                                if(ischose){
+                                    $("#timechose").val("");
+                                    return false;
+                                }else{
+                                    location.href="{:U('venue/info')}/id/"+venueadd;
+                                }
+                            }else{
+                                alert('添加失败！');
+                                return false;
+                            }
+                        }
+                    });
+                }
+            });
+            //获取城市
+            function getcity(){
+                var pid = $("#province").val();
+                $.ajax({
+                    url : '{:U("venue/getcity")}',
+                    type : 'POST',
+                    data : {'provinceid' : pid},
+                    success : function(data) {
+                        var data = eval("(" + data + ")");
+                        if(data.status=1){
+                            var str = '<select name="city" id="city" onchange="getarea(this)"><option value="0">市</option>';
+                            for(var i in data.citylist){
+                                str+='<option value="'+data.citylist[i].id+'">'+data.citylist[i].name+'</option>';
+                            }
+                            str +='</select>';
+                            $("#city").remove();
+                            $("#area").remove();
+                            $("#province").after(str);
+                        }else{
+                            alert('参数错误！');
+                            return false;
+                        }
+                    }
+                });
+            }
+            //获取区县
+            function getarea(){
+                var cid = $("#city").val();
+                $.ajax({
+                    url : '{:U("venue/getarea")}',
+                    type : 'POST',
+                    data : {'cityid' : cid},
+                    success : function(data) {
+                        var data = eval("(" + data + ")");
+                        if(data.status=1){
+                            var str = '<select name="area" id="area"><option value="0">区</option>';
+                            for(var i in data.arealist){
+                                str+='<option value="'+data.arealist[i].id+'">'+data.arealist[i].name+'</option>';
+                            }
+                            str +='</select>';
+                            $("#area").remove();
+                            $("#city").after(str);
+                        }else{
+                            alert('参数错误！');
+                            return false;
+                        }
+                    }
+                });
+            }
+
+            //添加场馆
+            $("#addvenue").click(function(){
+                var crowd = "";    //选中人群
+                var cclass = "";   //选中子类
+
+                var venuename = $('#venuename').val();  //场馆名称
+                var venueid = $('#venueid').val();      //场馆id
+                var isopen =  $("input[name=isopen]:checked").val() || false;     //是否开业
+                var province = $("#province").val();           //省
+                var city = $("#city").val() || 0;                   //市
+                var area = $("#area").val() || 0;                   //区
+                var topclass = $("input[name=classname]:checked").val() || false;   //选中的大类
+                var vtelephone = $("#vtelephone").val();   //场馆电话
+                var vsort = $("#vsort").val();   //场馆排序
+                var address = $("#address").val();   //场馆地址
+
+                var venuepicpic = $("#venuepicpic").val();   //场馆列表图
+
+                //场馆多张图片
+                var imgs = $(".venuepicpics");
+                var venuepicpics = new Array();
+                imgs.each(function(){
+                    venuepicpics.push($(this).attr('src'));//获取每张图片的src值
+                });
+//                alert(venuepicpics.join(','));
+                $("input[name=ccrow]").each(function(){
+                    if($(this).attr("checked")) //如果被选中
+                        crowd += $(this).val() + ","; //获取被选中的值
+                });
+                if(crowd.length > 0) //如果获取到
+                    crowd = crowd.substring(0, crowd.length - 1); //把最后一个逗号去掉
+
+                $("input[name=cclassname]").each(function(){
+                    if($(this).attr("checked")) //如果被选中
+                        cclass += $(this).val() + ","; //获取被选中的值
+                });
+                if(cclass.length > 0) //如果获取到
+                    cclass = cclass.substring(0, cclass.length - 1); //把最后一个逗号去掉
+
+                var reg = /^\+?[1-9]\d*$/;    //大于0的数
+                if(!reg.test(vtelephone)){
+                    $("#vtelephones").html('<span style="color:red;">&nbsp;请输入正确手机格式！</span>');
+                    $("#vtelephone").val('');
+                    return false;
+                }
+
+                if(!reg.test(vsort)){
+                    $("#vsorts").html('<span style="color:red;">&nbsp;请输入大于0的数！</span>');
+                    $("#vsort").val('');
+                    return false;
+                }
+
+                if(venuename.length<1 || province<1 || city<1 || area<1 || vsort.length<1 || vtelephone.length<1 || topclass<1 || crowd.length<1 || cclass.length<1){
+                    alert('所有参数必填！');
+                }else{
+                    $.ajax({
+                        url : '{:U("venue/editvenue")}',
+                        type : 'POST',
+                        data : {'venuename' :venuename,'venueid':venueid,'isopen':isopen,'province':province,'city':city,'area':area,'topclass':topclass,'vtelephone':vtelephone,'vsort':vsort,'address':address,'crowd':crowd,'cclass':cclass,'venuepicpic':venuepicpic,'venuepicpics':venuepicpics.join(',')},
+                        success : function(data) {
+                            var data = eval("(" + data + ")");
+                            if(data.status=1){
+                                alert(data.message);
+                                location.href='{:U("venue/index")}';
+                            }else{
+                                alert('添加失败！');
+                                return false;
+                            }
+                        }
+                    });
+                }
+            });
+
+            //场馆搜索
+            $("#vsearch").bind('click', function() {
+                var vname = $("#vname").val() || 0; //场馆名
+                var vstatus = $("#vstatus").val() || 0; //开业状态
+                $.ajax({
+                    url : '{:U("venue/index")}',
+                    type : 'POST',
+                    data : {'vname':vname,'vstatus':vstatus},
+                    success : function(data) {
+                        var data = eval("(" + data + ")");
+//                        console.log(data);
+                        if(data.status=1){
+                            var str = '';
+                            console.log(data.venuelist);
+                            if(data.venuelist !== null){
+                                for(var i in data.venuelist){
+                                    var surl = "{:U('venue/addschedule')}/id/"+data.venuelist[i].id;
+                                    var iurl = "{:U('venue/info')}/id/"+data.venuelist[i].id;
+                                    var eurl = "{:U('venue/editvenue')}/id/"+data.venuelist[i].id;
+                                    str+='<tr><td><a href="'+iurl+'" class="btn">'+data.venuelist[i].name+'</a></td>	<td>'+data.venuelist[i].cname+'</td>';
+                                    if(data.venuelist[i].state>0){
+                                        str+='<td>开业</td>';
+                                    }else{
+                                        str+='<td>停业</td>';
+                                    }
+                                    if(data.venuelist[i].service.length>0){
+                                        var service = data.venuelist[i].service;
+                                        str+='<td>';
+                                        for(var j in service){
+                                            str+=service[j].sname;
+                                        }
+                                        str+='</td>';
+                                    }else{
+                                        str+='<td>暂无</td>';
+                                    }
+                                    str+='<td>'+data.venuelist[i].id+'</td><td><a href="'+surl+'">排期</a>/<a href="'+eurl+'">编辑信息</a>/<span class="delvenue">删除</span></td><input type="hidden" value="'+data.venuelist[i].id+'"></tr>';
+                                }
+                            }else{
+                                str+='<tr><td colspan="6" style="text-align: center;">暂无！</td></tr>';
+                            }
+                            $("#venuelists").html(str);
+                            $(".page").remove();
+                        }
+                    }
+                });
+            });
+
+            //删除场馆
+            $("#venuelists").on('click','.delvenue', function() {
+                //获取场馆id
+                var venueid = $(this).parent().next().val();
+                var obj = $(this).parent().parent();
+                if(confirm("确认删除？")){
+                    $.ajax({
+                        url : '{:U("venue/delvenue")}',
+                        type : 'POST',
+                        data : {'venueid':venueid},
+                        success : function(data) {
+                            var data = eval("(" + data + ")");
+                            if(data.status=1){
+                                obj.remove();
+                                return false;
+                            }else{
+                                alert('删除失败！');
+                                return false;
+                            }
+                        }
+                    });
+                }
+            });
+
+            //切换子服务
+            $("input[name='classname']").bind('click', function() {
+                //选中大分类id
+                var classid = $(this).val();
+                $.ajax({
+                    url : '{:U("venue/getclasslist")}',
+                    type : 'POST',
+                    data : {'classid':classid},
+                    success : function(data) {
+                        var data = eval("(" + data + ")");
+                        if(data.status=1){
+                            var str = '';
+                            for(var i in data.cclass){
+                                str+='<input name="cclassname" type="checkbox" value="'+data.cclass[i].id+'">'+data.cclass[i].name+'&nbsp;';
+                            }
+                            $("#classchild").html(str);
+                        }
+                    }
+                });
+            });
+
+            //切换状态
+            $("#isopen").bind('click', function() {
+                //选中大分类id
+                var isopen = $(this).val();
+                if(isopen==1){
+                    $(this).val(0);
+                    $(this).next().html('停业');
+                    $(this).next().css("color","darkred");
+                }else{
+                    $(this).val(1);
+                    $(this).next().html('开业');
+                    $(this).next().css("color","green");
+                }
+            });
+
+            //切换排期
+            $(".schedule").bind('click', function() {
+                var sschedule = $(".sschedule");
+                for (i = 0; i < sschedule.length; i++) {
+                    sschedule[i].style.display = 'none';
+                }
+                //让选中显示
+                $(".sschedule").eq($(this).index()).css('display','block');
+            });
+
+            //删除排期
+            $(".delschedule").bind('click', function() {
+                //选中的排期id
+                var scheid = $(this).next().val();
+                if(confirm("确认删除？")){
+                    $.ajax({
+                        url : '{:U("venue/delschedule")}',
+                        type : 'POST',
+                        data : {'scheid':scheid},
+                        success : function(data) {
+                            var data = eval("(" + data + ")");
+                            if(data.status=1){
+                                $('.sche_'+scheid).remove();
+                                alert('删除成功！');
+                            }
+                        }
+                    });
+                }
+            });
+
+            //根据场馆获取子服务
+            function getitems(){
+                var venueid = $("#venueadd").val();
+                $.ajax({
+                    url : '{:U("venue/getitems")}',
+                    type : 'POST',
+                    data : {'venueid' : venueid},
+                    success : function(data) {
+                        var data = eval("(" + data + ")");
+                        if(data.status=1){
+                            var str = '<select name="itemsadd" id="itemsadd"><option value="0">请选择服务子项目</option>';
+                            for(var i in data.itemslist){
+                                str+='<option value="'+data.itemslist[i].id+'">'+data.itemslist[i].sname+'</option>';
+                            }
+                            str +='</select>';
+                            $("#itemsad").html(str);
+                        }else{
+                            alert('参数错误！');
+                            return false;
+                        }
+                    }
+                });
+            }
+            //删除图片
+            $("#venuepicpics").on("click",'.imgclose',function(){
+                $(this).parent().remove();
+            });
+        </script>
+    <block name="script"></block>
+</body>
+</html>

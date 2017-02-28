@@ -1,0 +1,68 @@
+<extend name="Public/base"/>
+
+<block name="body">
+    <div class="main-title">
+        <h2><present name="data">[ {$data.title} ] 子</present>项目大类管理 </h2>
+    </div>
+
+    <div>
+        <form method="post" action="" enctype="multipart/form-data">
+        <table>
+            <tr>
+                <th>请输入新的项目大类名称：</th>
+                <th>排序</th>
+                <th>配图</th>
+                <th></th>
+            </tr>
+            <tr>
+                <td><input type="text" name="name"/> </td>
+                <td><input type="text" name="sort"/> </td>
+                <td><input type="file" name="images"/> </td>
+                <td><input type="submit" value="添加大类"/> </td>
+            </tr>
+        </table>
+        </form>
+    </div>
+
+    <div class="cf">
+       当前已有大类
+    </div>
+
+    <div class="data-table table-striped">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>名称</th>
+                        <th>排序</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+				<notempty name="list">
+                <volist name="list" id="menu">
+                    <tr>
+                        <td>{$menu.id}</td>
+                        <td>{$menu.name}</td>
+                        <td>{$menu.sort}</td>
+                        <td>
+                            <a  href="{:U('Project/editState',[id=>$menu['id'],'state'=>$menu['state']])}">
+                                <if condition="$menu.state EQ 1">隐藏<else/>显示</if>
+                            </a>
+                            <a class="confirm ajax-get"  href="{:U('Project/delete',['id'=>$menu[id]])}">删除</a>
+                        </td>
+                    </tr>
+                </volist>
+				<else/>
+				<td colspan="10" class="text-center"> aOh! 暂时还没有内容! </td>
+				</notempty>
+                </tbody>
+            </table>
+
+        <!-- 分页 -->
+        <div class="page">
+        {$page}
+        </div>
+    </div>
+</block>

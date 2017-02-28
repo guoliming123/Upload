@@ -1,0 +1,95 @@
+<extend name="Public/base"/>
+<block name="body">
+    <div class="main-title">
+        <h2>
+            <present name="data">[ {$data.title} ] 子</present>
+            增加服务子类
+        </h2>
+    </div>
+
+    <div>
+        <form method="post" action="">
+            <table>
+                <tr>
+                    <th>请输入新的服务子类名称：</th>
+                    <th>排序</th>
+                    <th>所属项目大类</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td><input type="text" name="name"/></td>
+                    <td><input type="text" name="sort"/></td>
+                    <td><select name="class_id">
+                        <volist name="list" id="menu">
+                            <option value="{$menu.id}">{$menu.name}</option>
+                        </volist>
+                    </select></td>
+                    <td><input type="submit" value="添加服务"/></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <div class="cf">
+        当前已有服务子类
+    </div>
+
+    <div class="data-table table-striped">
+        <volist name="list" id="v">
+            <div class="list_click" id="{$v.id}">{$v.name}</div>
+        </volist>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>名称</th>
+                <th>排序</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+        </table>
+
+
+        <?php foreach($itemList as $key=>$menu){ ?>
+        <div class="itemList_style" style=" display: none;" id="itemList_<?php echo $key;?>">
+            <table>
+                <iterate name="menu" id="sub">
+
+                    <tr>
+                        <td>{$sub.id}</td>
+                        <td>{$sub.name}</td>
+                        <td>{$sub.sort}</td>
+                        <td>
+                            <a href="{:U('ServiceItems/editState',[id=>$sub['id'],'state'=>$sub['state']])}">
+                                <if condition="$sub.state EQ 1">隐藏
+                                    <else/>
+                                    显示
+                                </if>
+                            </a>
+                            <a class="confirm ajax-get" href="{:U('ServiceItems/delete',['id'=>$sub[id]])}">删除</a>
+                        </td>
+                    </tr>
+                </iterate>
+
+            </table>
+        </div>
+        <?php } ?>
+
+
+        <!-- 分页 -->
+        <div class="page">
+{$page}
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $('.list_click').on('click', function () {
+            var id = $(this).attr('id');
+            $(".itemList_style").hide();
+            $("#itemList_" + id).show();
+        });
+    </script>
+
+</block>
+
+

@@ -1,0 +1,56 @@
+<extend name="Public/base" />
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>会员详情</h2>
+	</div>
+    <div class="cf">
+        <ul>
+            <li><b>会员名称:</b>{$memberinfo.nickname}</li>
+            <li><b>会员手机号:</b>{$memberinfo.mobile}</li>
+            <li><b>是否VIP:</b>
+                <if condition="$memberinfo.is_member eq 1">是<else />否</if>
+            </li>
+            <li><b>累积消费金额:</b>{$memberinfo.totalmoney}</li>
+            <li><b>操作:</b></li>
+        </ul>
+    </div>
+    <div class="cf" style="text-align: center;">
+        历史消费
+    </div>
+    <!-- 数据列表 -->
+    <div class="data-table table-striped">
+        <table>
+            <thead>
+            <tr>
+                <th>订单号</th>
+                <th>下单时间</th>
+                <th>订单最终金额</th>
+                <th>订单状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <notempty name="memberinfo.costrecord">
+                <volist name="memberinfo.costrecord" id="costlist">
+                    <tr>
+                        <td>{$costlist.id}</td>
+                        <td>{$costlist.create_time|date='Y-m-d H:i:s',###}</td>
+                        <td>{$costlist.price}</td>
+                        <td>{$costlist.status}</td>
+                        <td>
+                            <a title="查看详情" href="{:U('Order/detail', array('id' => $costlist['id']))}">查看详情</a>
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                <td colspan="6" class="text-center">暂时还没有内容!</td>
+            </notempty>
+            </tbody>
+        </table>
+        <!-- 分页 -->
+        <div class="page">
+            {$_page}
+        </div>
+    </div>
+</block>

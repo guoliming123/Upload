@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="__STATIC__/jquery-1.10.2.min.js"></script>
+    <![endif]--><!--[if gte IE 9]><!-->
+    <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="__JS__/jquery.mousewheel.js"></script>
+    <!--<![endif]-->
+</head>
+<body>
+<div>
+    <?php
+    if($venueList['images'] != '' ){
+        $imageArray = explode(',',$venueList['images']);
+        foreach($imageArray as $v){
+        echo '<img src="http://'.C('DOMAIN_NAME').C('IMAGE_PATH').$v.'" width="100"/>';
+    }
+    }
+    ?>
+    <br/>
+    {$venueList['name']}{$venueList['address']}
+</div>
+
+<hr/>
+<div  style="height: 100px">
+
+    <volist name="venueServiceItemsList" id="v">
+        <dl style="float: left; margin-left: 10px;">
+            <dt id="{$v.id}">{$v.name}</dt>
+            <dd>{$v.minute}分钟 | 最多{$v.people_number}人 | 98%满意度</dd>
+        </dl>
+    </volist>
+</div>
+<hr/>
+<div>
+    <input type="button" class="query_day" data-id="0" value="今天"/>
+    <input type="button" class="query_day" data-id="1" value="明天"/>
+    <input type="button" class="query_day" data-id="2" value="后天"/>
+</div>
+
+<div id="schedule_list_id">
+
+    <volist name="scheduleList" id="v">
+        {$v.start_time}
+        {$v.endTime}
+        {$v.price}
+
+        <a href="{:U('Order/index',['venue_id'=>$venue_id,'schedule_id'=>$v['id']])}">预定{$v.remainingNumber}名额</a>
+
+    </volist>
+</div>
+<input type="hidden" id="venue_id" value="{$venue_id}"/>
+<input type="hidden" id="ajaxQueryDay" value="{$ajaxQueryDay}"/>
+<script type="text/javascript">
+    $(".query_day").on('click',function () {
+        var ajaxQueryDay = $('#ajaxQueryDay').val();
+        var type_id = $(this).attr('data-id');
+        var venue_id = $('#venue_id').val();
+        $.ajax({
+            url: ajaxQueryDay,
+            type: "post",
+            data: {"venue_id":venue_id,"type_id":type_id},
+            dataType: "json",
+            timeout: 2000,
+            error: function () {
+                alert("ajax error!");
+            },
+            success: function (jsondata) {
+                var html = '';
+                jQuery.each(jsondata, function (i, val) {
+                    html += val.start_time+val.endTime+val.price+'<a href="'+"{:U('Order/index')}"+'/venue_id/'+venue_id+'/schedule_id/'+val.id+'">预定'+val.remainingNumber+'名额</a>';
+                });
+               $('#schedule_list_id').empty().append(html);
+            }
+        });
+        return false;
+    });
+</script>
+
+</body>
+</html>

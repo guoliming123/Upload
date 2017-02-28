@@ -1,0 +1,140 @@
+<extend name="Public/base" />
+
+<block name="body">
+    <!-- 标题栏 -->
+    <div>
+        <a href="###" class="btn">场馆信息</a>
+    </div>
+
+    <!-- 数据列表 -->
+    <div class="data-table table-striped">
+        <table>
+            <tbody>
+            <tr>
+                <td>场馆名称<span style="margin-left: 25px;">{$venuedetail.name}</span></td>
+                <td>是否开业&nbsp;&nbsp;<if condition="$venuedetail.state eq 1"><span style="color:green;">开业</span><else /><span style="color:darkred;">关业</span></if></td>
+            </tr>
+            <tr>
+                <td>地址</td>
+                <td>
+                    <select name="province" disabled="disabled">
+                        <option value="{$venuedetail.province}" selected="selected">{$venuedetail.provincename}</option>
+                    </select>
+                    <select name="city" disabled="disabled">
+                        <option value="{$venuedetail.city}" selected="selected">{$venuedetail.cityname}</option>
+                    </select>
+                    <select name="district" disabled="disabled">
+                        <option value="{$venuedetail.area}" selected="selected">{$venuedetail.areaname}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><textarea name="" cols="40" rows="3" disabled="disabled">{$venuedetail.address}</textarea></td>
+            </tr>
+            <tr>
+                <td>场馆形象图</td>
+                <td>
+                    <volist name="venuedetail.venimages" id="vimages">
+                        <div style="display: inline-block;position: relative;margin:5px;">
+                            <i class="imgclose" style="width: 16px;height: 16px;position: absolute;right: 0;color: red;font-style: normal;cursor: pointer">x</i>
+                            <img src="{$vimages}" width="100" height="68" border="0" class="venuepicpics">
+                        </div>
+                    </volist>
+                </td>
+            </tr>
+            <tr>
+                <td>场馆列表图</td>
+                <td>
+                    <img id="img" src="{$venuedetail.single_image}" width="300" height="168" border="0" /><br>
+                    <input type="hidden" name="venuepic" id="venuepicpic" value="{$venuedetail.single_image}">
+                </td>
+            </tr>
+            <tr>
+                <td>场馆电话</td>
+                <td>
+                    <span>{$venuedetail.telephone}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>场馆排序</td>
+                <td>
+                    <span>{$venuedetail.sort}</span>
+                </td>
+            </tr>
+            <tr>
+                <td>所属项目大类</td>
+                <td>
+                    <input name="" type="radio" value="{$venuedetail.class_id}" checked="checked" disabled="disabled"/>{$venuedetail.cname}
+                </td>
+            </tr>
+            <tr>
+                <td>提供服务子类</td>
+                <td>
+                    <volist name="clarray" id="cl">
+                        <input name="" type="checkbox" value="{$cl.service_items_id}" checked="checked" disabled="disabled"/>{$cl.sname}
+                    </volist>
+                </td>
+            </tr>
+            <tr>
+                <td>适合人群</td>
+                <td>
+                    <volist name="crarray" id="cr">
+                        <input name="" type="checkbox" value="{$cl.crowd_id}" checked="checked" disabled="disabled"/>{$cr.crname}
+                    </volist>
+                </td>
+            </tr>
+            <tr>
+                <td>场馆名称<span style="margin-left: 25px;">{$venuedetail.name}[98%满意]</span></td>
+                <td><a href="{:U('addSchedule',array('id'=>$venuedetail['id']),'')}"><input type="button" value="增加排期"></a></td>
+            </tr>
+            <tr>
+                <td>
+                    <volist name="clarray" id="cl">
+                        <input type="button" value="{$cl.sname}" class="schedule"/>&nbsp;
+                    </volist>
+                </td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <volist name='schedulelist' id="slist" key="k">
+        <if condition="$k eq 1">
+            <div data="{$k}" class="sschedule" style="margin-top:5px;">
+                <empty name="slist.schedule">
+                    <div style="margin-left: 10px;">暂无排期！</div>
+        `       <else/>
+                    <volist name='slist.schedule' id="sslist">
+                        <div class="sche_{$sslist.id}">
+                            <td>{$sslist.start_time|date="m-d",###}</td>
+                            <td>[开始时间：{$sslist.start_time|date="H:i",###}   原价：{$sslist.price}  会员价：￥{$sslist.member_price}  最多 [{$sslist.people_number}] 人</td>
+                            <span class="delschedule">删除</span>
+                            <input type="hidden" value="{$sslist.id}" />
+                        </div>
+                    </volist>
+                </empty>
+            </div>
+        <else />
+            <div data="{$k}" class="sschedule" style="margin-top:5px;display: none;">
+                <empty name="slist.schedule">
+                    <div style="margin-left: 10px;">暂无排期！</div>
+                </else/>
+                    <volist name='slist.schedule' id="sslist">
+                        <div class="sche_{$sslist.id}">
+                            <td>{$sslist.start_time|date="m-d",###}</td>
+                            <td>[开始时间：{$sslist.start_time|date="H:i",###}   原价：{$sslist.price}  会员价：￥{$sslist.member_price}  最多 [{$sslist.people_number}] 人</td>
+                            <span class="delschedule">删除</span>
+                            <input type="hidden" value="{$sslist.id}" />
+                        </div>
+                    </volist>
+                </empty>
+            </div>
+        </if>
+    </volist>
+    <!-- 分页 -->
+    <div class="page">
+        {$_page}
+    </div>
+</block>

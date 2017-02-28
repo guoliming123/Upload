@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="__STATIC__/jquery-1.10.2.min.js"></script>
+    <![endif]--><!--[if gte IE 9]><!-->
+    <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="__JS__/jquery.mousewheel.js"></script>
+    <!--<![endif]-->
+</head>
+<body>
+<form method="post" action="{:U('Search/index')}">
+    <input type="text" value="请输入关键字" name="name"/>
+    <input type="submit" value="提交"/>
+    <input type="hidden" name="search" value="1"/>
+</form>
+
+<div>
+    <select id="search_1">
+        <option value="0">项目</option>
+        <volist name="classificationList" id="v">
+            <option value="{$v.id}">{$v.name}</option>
+        </volist>
+    </select>
+    <select id="search_2">
+        <option value="0">地点</option>
+        <volist name="regionList" id="v">
+            <option value="{$v.id}">{$v.name}</option>
+        </volist>
+    </select>
+
+    <select id="search_3">
+        <option value="0">人群</option>
+        <volist name="crowdList" id="v">
+            <option value="{$v.id}">{$v.name}</option>
+        </volist>
+    </select>
+</div>
+
+<div>
+    <volist name="serviceItemsList" id="v">
+        <a href="{:U('Search/index',['search'=>4,'id'=>$v['id']])}">{$v.name}</a>
+    </volist>
+</div>
+
+<div>
+    <ul>
+        <volist name="list" id="v">
+            <li><a href="{:U('Venue/index',['id'=>$v['id']])}">{$v.name}</a></li>
+        </volist>
+    </ul>
+</div>
+<input type="hidden" id="url" value="{:U('Search/index')}"/>
+<script>
+    var url = $('#url').val();
+    $('#search_1').on('change', function () {
+        var val = $(this).val();
+        location.href = "{:U('Search/index',['search'=>1])}/id/" + val;
+    });
+
+    $('#search_2').on('change', function () {
+        var val = $(this).val();
+        location.href = "{:U('Search/index',['search'=>2])}/id/" + val;
+    });
+
+    $('#search_3').on('change', function () {
+        var val = $(this).val();
+        location.href = "{:U('Search/index',['search'=>3])}/id/" + val;
+    });
+
+    $('body').on('click', '#laydate_ok', function () {
+        alert($('.laydate-icon').val());
+    });
+
+    $('body').on('click', '#laydate_today', function () {
+        alert($('.laydate-icon').val());
+    });
+    $('body').on('click', '#laydate_table  tbody tr td', function () {
+        alert($('.laydate-icon').val());
+    });
+
+    $('#laydate_table tbody tr td').on('click', function () {
+        alert($('.laydate-icon').val());
+    });
+
+</script>
+
+</body>
+
+
+</html>

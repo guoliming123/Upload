@@ -1,0 +1,41 @@
+<extend name="Public/base" />
+<style>
+    .margin_bottom{margin-bottom: 20px;}
+</style>
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>订单详情</h2>
+	</div>
+
+    <!-- 按钮工具栏 -->
+    <div class="cf">
+        <ul class="margin_bottom">
+            <li style="font-size: 14px;"><b>订单信息</b></li>
+            <li>订单号：{$order_info.id}</li>
+            <li>下单时间：{$order_info.create_time|date="Y-m-d H:i:s",###}</li>
+            <li>订单金额：{$order_info.price}</li>
+            <li>优惠券抵扣金额：</li>
+            <li>订单最终金额：{$order_info.price}</li>
+            <li>订单状态：{$order_info.status}</li>
+        </ul><br>
+        <ul class="margin_bottom">
+            <li style="font-size: 14px;"><b>产品信息</b></li>
+            <li>{$order_info.name}-{$order_info.siname}&nbsp;[{$order_info.start_time|date="Y-m-d",###} &nbsp;{$order_info.start_time||date="H:i",###}]</li>
+            <li>{$order_info.vname}</li>
+            <li>{$order_info.addressdetail}</li>
+        </ul><br>
+        <ul class="margin_bottom">
+            <li style="font-size: 14px;"><b>买家信息</b></li>
+            <li>用户手机：{$member_info.mobile}</li>
+            <li>用户昵称：{$member_info.nickname}</li>
+            <li>VIP会员：
+                <if condition="$member_info.status eq 1">是<else />否</if>
+            </li>
+        </ul>
+        <div style="margin-top:10px;">
+            <input type="button" value="核销本订单">
+        </div>
+    </div>
+</block>
+

@@ -1,0 +1,83 @@
+<extend name="Public/base" />
+<block name="body">
+    <!-- 标题栏 -->
+    <div>
+        <a href="###" class="btn">增加排期</a>
+    </div>
+
+    <!-- 数据列表 -->
+    <div class="data-table table-striped">
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <select name="venueadd" id="venueadd" onchange="getitems(this)">
+                            <option value="0">请选择场馆</option>
+                            <volist name="venuelist" id="ve">
+                                <eq name="ve.id" value="$venueid">
+                                    <option value="{$ve.id}" selected >{$ve.vname}</option>
+                                    <else />
+                                    <option value="{$ve.id}">{$ve.vname}</option>
+                                </eq>
+                            </volist>
+                        </select>
+                    </td>
+                    <td id="itemsad">
+                        <if condition="$venueid gt 0">
+                            <select name="itemsadd" id="itemsadd">
+                                <option value="0">请选择服务子项目</option>
+                                <volist name="itemslist" id="ite">
+                                    <option value="{$ite.id}">{$ite.sname}</option>
+                                </volist>
+                            </select>
+                        </if>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span>开始时间</span>
+                        <input type="text" id="timechose" style="margin-left: 30px;"/>
+                    </td>
+                    <td>
+                        <select name="timelength" id="timelength">
+                            <option value="0">请选择时长</option>
+                            <option value="15">15分钟</option>
+                            <option value="20">20分钟</option>
+                            <option value="30">30分钟</option>
+                            <option value="40">40分钟</option>
+                            <option value="60">60分钟</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>请设置原价</td>
+                    <td>
+                        <input type="text"  id="price"/><span id="prices"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>请设置会员价</td>
+                    <td>
+                        <input type="text" id="memberprice"/><span id="memberprices"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>最多</td>
+                    <td>
+                        <input type="text"  id="peplenum"/>人<span id="peplenums"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="确定添加" id="schedadd"/>
+                        <label style="margin-left: 30px;"><input name="addschedule" type="radio" id="addschedule"/>继续添加
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- 分页 -->
+    <div class="page">
+        {$_page}
+    </div>
+</block>

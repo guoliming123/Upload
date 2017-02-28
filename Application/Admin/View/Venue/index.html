@@ -1,0 +1,64 @@
+<extend name="Public/base" />
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title"><h2>场馆管理</h2></div>
+	<div>
+		<span><a href="{:U('editVenue')}" class="btn">场馆添加</a></span>&nbsp;场馆名称<input type="text" id="vname"/>
+		&nbsp;营业状态<select name="" id="vstatus"><option value="1">开业</option><option value="0">停业</option></select>
+		<input type="button" value="搜索" id="vsearch">
+	</div>
+
+	<!-- 数据列表 -->
+	<div class="data-table table-striped">
+		<table>
+			<thead>
+				<tr>
+					<th>场馆名称</th>
+					<th>所属分类</th>
+					<th>是否开业</th>
+					<th>服务项目</th>
+					<th>排序</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody id="venuelists">
+				<notempty name="list">
+				<volist name="list" id="vo">
+				<tr>
+					<td><a href="{:U('info',array('id'=>$vo['id']),'')}" class="btn">{$vo.name}</a></td>
+					<td>{$vo.cname}</td>
+					<td>
+						<if condition="($vo.state eq 1)">开业<else />停业</if>
+					</td>
+					<td>
+						<notempty name="vo.service">
+							<volist name="vo.service" id="vs" key="k">
+								<if condition="$k eq count($vo.service)">
+									{$vs.sname}
+								<else />
+									{$vs.sname}
+								</if>
+							</volist>
+							<else />
+							暂无
+						</notempty>
+					</td>
+					<!--<td><a target="_blank" href="{$vo.url|default='http://www.onethink.cn'}">{$vo.author}</a></td>-->
+					<td>{$vo.sort}</td>
+					<td>
+					<a href="{:U('addSchedule',array('id'=>$vo['id']),'')}">排期</a>/<a href="{:U('editVenue',array('id'=>$vo['id']),'')}">编辑信息</a>/<span class="delvenue">删除</span>
+					</td>
+					<input type="hidden" value="{$vo.id}">
+				</tr>
+				</volist>
+				<else/>
+				<td colspan="6" class="text-center">暂时还没有内容! </td>
+				</notempty>
+			</tbody>
+		</table>
+	</div>
+	<!-- 分页 -->
+    <div class="page">
+        {$page}
+    </div>
+</block>

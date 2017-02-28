@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="__STATIC__/jquery-1.10.2.min.js"></script>
+    <![endif]--><!--[if gte IE 9]><!-->
+    <script type="text/javascript" src="__STATIC__/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="__JS__/jquery.mousewheel.js"></script>
+    <!--<![endif]-->
+</head>
+<body>
+<div>
+    <ul>
+        <li>主页</li>
+        <li>社区</li>
+        <li>推荐</li>
+        <li>我的</li>
+    </ul>
+</div>
+<form method="post" action="{:U('Search/index')}">
+    <input type="text" name="name" id="search1"/>
+
+    <div id="bl"></div>
+    <input type="submit" value="提交"/>
+    <input type="hidden" id="classification_hide" name="classification_id"/>
+
+    <div id="bl_hide"></div>
+
+</form>
+<h3>项目列表</h3>
+<url>
+
+    <volist name="classList" id="v">
+        <li class="classification" data-id="{$v.id}">{$v.name}
+            <img src="{$imagePath}{$v.images}" width="100"/>
+        </li>
+    </volist>
+
+</url>
+
+<h3>场馆列表</h3>
+
+<div>
+    <ur>
+        <volist name="venueList" id="v">
+            <li>{$v.name}<img src="http://'.C('DOMAIN_NAME').C('IMAGE_PATH').$v['images'].'"/></li>
+        </volist>
+    </ur>
+</div>
+</body>
+<input type="hidden" id="ajaxUrl" value="{$ajaxUrl}"/>
+<script type="text/javascript">
+
+    $('.classification').on('click', function () {
+        $('#bl_hide').empty();
+        $('#classification_hide').val($(this).attr('data-id'));
+    });
+
+    $("#search1").on('click', function () {
+        $('#bl_hide').empty();
+        var id = $('#classification_hide').val();
+        $.ajax({
+            url: $('#ajaxUrl').val(),
+            type: "post",
+            data: {"id": id},
+            dataType: "json",
+            timeout: 1500,
+            error: function () {
+                alert("ajax error!");
+            },
+            success: function (jsondata) {
+                html = '';
+                jQuery.each(jsondata, function (i, val) {
+                    html += '<input class="service_items_tj" type="button" id="' + val.id + '" value="' + val.name + '"/>';
+                });
+                $('#bl').empty().append(html);
+            }
+        });
+        return false;
+    });
+
+    $('body').on('click', '.service_items_tj',function () {
+        var html = '<input type="hidden"  name="service_items_id[]" value="' + $(this).attr('id') + '"/>';
+        $('#bl_hide').append(html);
+    });
+;
+</script>
+
+</html>

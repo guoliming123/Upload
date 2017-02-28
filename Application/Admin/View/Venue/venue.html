@@ -1,0 +1,204 @@
+<extend name="Public/base" />
+<block name="body">
+    <!-- 标题栏 -->
+    <div>
+        <if condition="$venueid eq 0">
+            <a href="javascript:void(0)" class="btn" id="addvenue">场馆添加</a>
+            <else />
+            <a href="javascript:void(0)" class="btn" id="addvenue">场馆编辑</a>
+        </if>
+    </div>
+
+    <!-- 数据列表 -->
+    <div class="data-table table-striped">
+        <table>
+            <tbody>
+            <tr>
+                <td>场馆名称<span style="margin-left: 25px;">
+                    <if condition="$venueid eq 0">
+                        <input type="text" id="venuename"/>
+                        <else />
+                        <input type="text" id="venuename" value="{$venue.name}"/>
+                    </if>
+                    </span>
+                    <input type="hidden" value="{$venueid}" id="venueid">
+                </td>
+                <empty name="venueid">
+                    <td>是否开业&nbsp;&nbsp;
+                        <input type="radio" value="1" checked="checked" name="isopen" id="isopen"><span>开业</span>
+                    </td>
+                    <else />
+                    <td>是否开业&nbsp;&nbsp;
+                        <if condition="$venue.state eq 1">
+                            <input type="radio" value="1" checked="checked" name="isopen" id="isopen">
+                            <span style="color:green;">开业</span>
+                            <else />
+                            <input type="radio" value="0" checked="checked" name="isopen" id="isopen">
+                            <span style="color:darkred;">停业</span>
+                        </if>
+                    </td>
+                </empty>
+            </tr>
+            <tr>
+                <td>地址</td>
+                <if condition="$venueid eq 0">
+                    <td>
+                        <select name="province" id="province" onchange="getcity(this)">
+                            <option value="0">省</option>
+                            <volist name="provincelist" id="plist">
+                                <option value="{$plist.id}">{$plist.name}</option>
+                            </volist>
+                        </select>
+                    </td>
+                    <else />
+                    <td>
+                        <select name="province" id="province" onchange="getcity(this)">
+                            <option value="0">省</option>
+                            <volist name="provincelist" id="plist">
+                                <if condition="$plist['id'] eq  $venue['province']">
+                                    <option value="{$plist.id}" selected="selected">{$plist.name}</option>
+                                <else />
+                                    <option value="{$plist.id}">{$plist.name}</option>
+                                </if>
+                            </volist>
+                        </select>
+                        <select name="city" id="city">
+                            <option value="0">市</option>
+                            <option value="{$venue.city}" selected="selected">{$venue.cityname}</option>
+                        </select>
+                        <select name="district" id="area">
+                            <option value="0">区</option>
+                            <option value="{$venue.area}" selected="selected">{$venue.areaname}</option>
+                        </select>
+                    </td>
+                </if>
+            </tr>
+            <tr>
+                <td></td>
+                <td><textarea name="address" id="address" cols="40" rows="3">{$venue.address}</textarea></td>
+            </tr>
+            <tr>
+                <td>场馆形象图</td>
+                <td>
+                    <div id="venuepicpics">
+                        <volist name="venue.venimages" id="vimages">
+                            <div style="display: inline-block;position: relative;margin:5px;">
+                                <i class="imgclose" style="width: 16px;height: 16px;position: absolute;right: 0;color: red;font-style: normal;cursor: pointer">x</i>
+                                <img src="{$vimages}" width="100" height="68" border="0" class="venuepicpics">
+                            </div>
+                        </volist>
+                    </div>
+                    <input id="file_uploads" type="file"  multiple="true" size="40" />
+                </td>
+            </tr>
+            <tr>
+                <td>场馆列表图</td>
+                <td>
+                    <img id="img" src="{$venue.single_image}" width="300" height="168" border="0" /><br>
+                    <input type="hidden" name="venuepicpic" id="venuepicpic" value="{$venue.single_image}">
+                    <input id="file_upload" type="file"  multiple="true" size="60" />
+                </td>
+            </tr>
+            <tr>
+                <td>场馆电话</td>
+                <td>
+                    <input id="vtelephone" type="text" value="{$venue.telephone}" /><span id="vtelephones"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>场馆排序</td>
+                <td>
+                    <input id="vsort" type="text" value="{$venue.sort}" /><span id="vsorts"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>所属项目大类</td>
+                <td>
+                    <volist name="classlist" id="clist">
+                        <if condition="$venueid eq 0">
+                            <input name="classname" type="radio" value="{$clist.id}" />{$clist.cname}&nbsp;
+                        <else />
+                            <if condition="$clist['id'] eq  $venue['class_id']">
+                                <input name="classname" type="radio" value="{$clist.id}" checked="checked" disabled="disabled"/>{$clist.cname}&nbsp;
+                            </if>
+                        </if>
+                    </volist>
+                </td>
+            </tr>
+            <tr>
+                <td>提供服务子类</td>
+                <td id="classchild">
+                    <volist name="classchild" id="cclist">
+                        <if condition="in_array($cclist['id'],$clarray)">
+                            <input name="cclassname" type="checkbox" value="{$cclist.id}" checked="checked"/>{$cclist.name}&nbsp;
+                            <else />
+                            <input name="cclassname" type="checkbox" value="{$cclist.id}" />{$cclist.name}&nbsp;
+                        </if>
+                    </volist>
+                </td>
+
+                <if condition="in_array($data['id'],$arr)">
+                    <li>包含在里面</li>
+                </if>
+            </tr>
+            <tr>
+                <td>适合人群</td>
+                <td>
+                    <volist name="crowlist" id="crlist">
+                        <if condition="in_array($crlist['id'],$crarray)">
+                            <input name="ccrow" type="checkbox" value="{$crlist.id}" checked="checked"/>{$crlist.name}&nbsp;
+                            <else />
+                            <input name="ccrow" type="checkbox" value="{$crlist.id}" />{$crlist.name}&nbsp;
+                        </if>
+                    </volist>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- 分页 -->
+    <div class="page">
+        {$_page}
+    </div>
+</block>
+
+
+<block name="script">
+    <link rel="stylesheet" type="text/css" href="__ROOT__/Public/Admin/js/uploadify/uploadify.css" />
+    <script src="/Public/Admin/js/uploadify/jquery.uploadify.min.js"></script>
+    <script type="text/javascript">
+            $(function () {
+                var sid = '{:session_id()}';
+                $('#file_upload').uploadify({
+                    formData : {'session_id' : sid},
+                    swf : '__PUBLIC__/Admin/js/uploadify/uploadify.swf',
+                    uploader : '{:U("venue/uploadify")}',
+                    buttonText : '场馆列表图片上传',
+                    fileTypeExt : '*.png;*.jpeg;*.jpg;*.gif;',
+                    fileTypeDesc : '选择图片',
+                    onUploadSuccess : function(file, data, response) {
+                        var src = '__ROOT__/Uploads/' + data;
+                        $('#img').attr('src', src);
+                        $('#venuepicpic').val(src);
+                    }
+                });
+
+                $('#file_uploads').uploadify({
+                    formData : {'session_id' : sid},
+                    swf : '__PUBLIC__/Admin/js/uploadify/uploadify.swf',
+                    uploader : '{:U("venue/uploadify")}',
+                    buttonText : '场馆形象图上传',
+                    fileTypeExt : '*.png;*.jpeg;*.jpg;*.gif;',
+                    fileTypeDesc : '选择图片',
+                    onUploadSuccess : function(file, data, response) {
+                        var src = '__ROOT__/Uploads/' + data;
+                        var html = '';
+                            html+= '<div style="display: inline-block;position: relative;margin:5px;">';
+                            html+='<i class="imgclose" style="width: 16px;height: 16px;position: absolute;right: 0;color: red;font-style: normal;cursor: pointer">x</i>';
+                            html+='<img src="'+src+'" width="100" height="68" border="0" class="venuepicpics"></div>';
+                        $("#venuepicpics").append(html);
+                    }
+                });
+            });
+    </script>
+</block>

@@ -1,0 +1,94 @@
+<extend name="Public/base" />
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>订单列表</h2>
+	</div>
+
+    <!-- 按钮工具栏 -->
+    <div class="cf">
+        <form action="{:U('Member/index')}" method="post">
+           <label>订单号</label>
+            <input type="text" name="order_id" class="search-input" value="{:I('order_id')}" placeholder="请输入订单号">&nbsp;
+            <label>会员手机号</label>
+            <input type="text" name="mobile" class="search-input" value="{:I('mobile')}" placeholder="请输入会员手机号">&nbsp;
+            <label>更新时间</label>
+            <input type="text" id="time-start" name="time_start" class="text input-2x" value="{:I('time_start')}" placeholder="开始时间" /> -
+            <input type="text" id="time-end" name="time_end" class="text input-2x" value="{:I('time_end')}" placeholder="结束时间" />&nbsp;
+            <input type="submit" value="搜索">
+            <input type="reset" value="清空搜索条件">
+        </form>
+        <form action="{:U('Order/index')}" method="post">
+            <input type="submit" value="查看今日订单">
+            <input type="hidden" name="today_order" value="today_order">
+        </form>
+    </div>
+
+    <!-- 数据列表 -->
+    <div class="data-table table-striped">
+        <table>
+            <thead>
+            <tr>
+                <th>订单号</th>
+                <th>下单时间</th>
+                <th>购买用户手机</th>
+                <th>订单最终金额</th>
+                <th>订单状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <notempty name="order_info">
+                <volist name="order_info" id="value">
+                    <tr>
+                        <td>{$value.id}</td>
+                        <td>{$value['create_time']|date="Y-m-d H:i:s",###}</td>
+                        <td>{$value.mobile}</td>
+                        <td>{$value.price}</td>
+                        <td>{$value.status}</td>
+                        <td>
+                            <a title="查看详情" href="{:U('Order/detail', array('id' => $value['id']))}">查看详情</a>
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                <td colspan="7" class="text-center">暂时还没有内容!</td>
+            </notempty>
+            </tbody>
+        </table>
+        <!-- 分页 -->
+        <div class="page">
+            {$page}
+        </div>
+    </div>
+</block>
+
+<block name="script">
+    <link href="__STATIC__/datetimepicker/css/datetimepicker.css" rel="stylesheet" type="text/css">
+    <php>if(C('COLOR_STYLE')=='blue_color') echo '<link href="__STATIC__/datetimepicker/css/datetimepicker_blue.css" rel="stylesheet" type="text/css">';</php>
+    <link href="__STATIC__/datetimepicker/css/dropdown.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="__STATIC__/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
+    <script>
+        $(function(){
+            console.log(1222);
+
+        })
+
+        $('#time-start').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language:"zh-CN",
+            minView:2,
+            autoclose:true
+        });
+
+        $('#time-end').datetimepicker({
+            format: 'yyyy-mm-dd',
+            language:"zh-CN",
+            minView:2,
+            autoclose:true
+        });
+    </script>
+
+</block>
